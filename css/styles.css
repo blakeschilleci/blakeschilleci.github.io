@@ -199,22 +199,68 @@ embed {
   background-color: #c0392b;
 }
 
-/* Contact Page */
+/* Contact Section */
 .contact {
-  padding: 50px;
+  padding: 50px 0;
+  background-color: #ecf0f1;
   text-align: center;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
 }
 
 .contact h1 {
   font-size: 32px;
   margin-bottom: 20px;
+  color: #2c3e50;
 }
 
-.contact p {
-  font-size: 18px;
+.contact-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.contact-card {
+  background-color: #fff;
+  width: 250px;
+  height: 200px;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.contact-card i {
+  font-size: 50px;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.contact-card h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.contact-card p {
+  font-size: 16px;
   color: #7f8c8d;
+}
+
+.contact-card a {
+  color: #e74c3c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
 }
 
 /* About Section */
@@ -312,6 +358,16 @@ embed {
 
   .contact, .about {
       padding: 30px;
+  }
+  
+  .contact-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-card {
+      width: 90%;
+      margin-bottom: 20px;
   }
 
   .card-container {
