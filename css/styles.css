@@ -20,23 +20,23 @@ html, body {
 }
 
 :root {
-  --bg-color: #f9f9f9;
-  --text-color: #333;
-  --primary-color: #3498db;
-  --secondary-color: #e74c3c;
-  --accent-color: #2c3e50;
+  --bg-color: #f0f5f9;
+  --text-color: #394867;
+  --primary-color: #7eb6c9;
+  --secondary-color: #f08a8a;
+  --accent-color: #5e6c84;
   --card-bg: #fff;
-  --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  --hover-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  --card-shadow: 0 10px 20px rgba(94, 108, 132, 0.1);
+  --hover-shadow: 0 15px 30px rgba(94, 108, 132, 0.2);
 }
 
 .dark-mode {
-  --bg-color: #1a1a2e;
-  --text-color: #e6e6e6;
-  --primary-color: #4671bb;
-  --secondary-color: #ff6b6b;
-  --accent-color: #0f3460;
-  --card-bg: #162447;
+  --bg-color: #202a3c;
+  --text-color: #e8ecf3;
+  --primary-color: #84b1c9;
+  --secondary-color: #f49393;
+  --accent-color: #38495a;
+  --card-bg: #2e3b4e;
   --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   --hover-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
 }
@@ -157,9 +157,9 @@ nav ul li a:hover {
 /* Hero Section with Animated Gradient */
 .hero {
   padding: 120px 0 60px;
-  background: linear-gradient(45deg, #ecf0f1, #3498db, #2c3e50);
+  background: linear-gradient(45deg, #e8eef2, #7eb6c9, #5e6c84, #f08a8a);
   background-size: 300% 300%;
-  animation: gradientBackground 10s ease infinite;
+  animation: gradientBackground 15s ease infinite;
   text-align: center;
   position: relative;
   min-height: 100vh;
@@ -287,6 +287,7 @@ nav ul li a:hover {
 
 .certification-card {
   background-color: var(--card-bg);
+  background-image: linear-gradient(135deg, var(--card-bg), rgba(126, 182, 201, 0.1));
   width: 220px;
   padding: 30px;
   box-shadow: var(--card-shadow);
@@ -294,6 +295,7 @@ nav ul li a:hover {
   border-radius: 15px;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   text-decoration: none;
+  border: 1px solid rgba(126, 182, 201, 0.2);
 }
 
 .certification-card:hover {
@@ -452,6 +454,7 @@ nav ul li a:hover {
 
 .contact-card {
   background-color: var(--card-bg);
+  background-image: linear-gradient(135deg, var(--card-bg), rgba(126, 182, 201, 0.1));
   width: 280px;
   height: 220px;
   border-radius: 15px;
@@ -463,6 +466,7 @@ nav ul li a:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border: 1px solid rgba(126, 182, 201, 0.2);
 }
 
 .contact-card:hover {
@@ -558,6 +562,8 @@ nav ul li a:hover {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   text-align: center;
   position: relative;
+  background-image: linear-gradient(135deg, var(--card-bg), rgba(126, 182, 201, 0.1));
+  border: 1px solid rgba(126, 182, 201, 0.2);
 }
 
 .card:hover {
@@ -583,10 +589,16 @@ nav ul li a:hover {
 }
 
 .card p {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text-color);
-  padding: 0 20px;
+  padding: 0 15px;
   margin-top: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+  height: 90px;
 }
 
 /* Footer Styles */
