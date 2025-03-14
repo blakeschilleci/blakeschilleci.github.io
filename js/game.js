@@ -6,7 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const highScoreDisplay = document.getElementById('high-score');
     
     // Create the canvas element for the game
-    let canvas, ctx, plane, clouds, stars, gameRunning, score, highScore, gameStarted;
+    let canvas, ctx, plane, terrain, clouds, stars, gameRunning, score, highScore, gameStarted;
+    let cameraAngle = 0;
+    let pitch = 0;
+    let roll = 0;
+    let altitude = 500;
+    let speed = 5;
     
     function setupGame() {
         // Create canvas element
@@ -28,14 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx = canvas.getContext('2d');
         
         // Initialize game variables
-        plane = {
-            x: 60,
-            y: 240,
-            width: 60,
-            height: 30,
-            speed: 4
-        };
-        
+        terrain = generateTerrain();
         clouds = [];
         stars = [];
         score = 0;
@@ -55,6 +53,21 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('keydown', handleKeyDown);
     }
     
+    function generateTerrain() {
+        const terrainPoints = [];
+        const terrainSegments = 20;
+        
+        for (let i = 0; i < terrainSegments; i++) {
+            terrainPoints.push({
+                x: (i - terrainSegments/2) * 200,
+                z: (i - terrainSegments/2) * 200,
+                height: Math.random() * 200 - 100
+            });
+        }
+        
+        return terrainPoints;
+    }
+    
     function drawInitialScreen() {
         // Draw sky background
         drawBackground();
@@ -65,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillText('Click or press SPACE to Start', canvas.width / 2, canvas.height / 2);
         
         // Draw the plane
-        drawPlane();
+        drawPlane3D();
     }
     
     function drawBackground() {
@@ -75,40 +88,30 @@ document.addEventListener('DOMContentLoaded', function() {
         skyGradient.addColorStop(1, '#87ceeb');
         ctx.fillStyle = skyGradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw mountains at the bottom
-        ctx.fillStyle = '#3d7d41';
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height);
-        ctx.lineTo(0, canvas.height - 80);
-        
-        // Create bumpy mountain range
-        for (let i = 0; i <= canvas.width; i += 30) {
-            const height = Math.random() * 30 + 50;
-            ctx.lineTo(i, canvas.height - height);
-        }
-        
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.closePath();
-        ctx.fill();
     }
     
     function startGame() {
         if (!gameStarted) {
             gameStarted = true;
             gameRunning = true;
-            plane.y = 240;
+            altitude = 500;
+            cameraAngle = 0;
+            pitch = 0;
+            roll = 0;
             clouds = [];
             stars = [];
+            terrain = generateTerrain();
             score = 0;
             scoreDisplay.textContent = score;
             
-            // Create initial clouds and stars
-            for (let i = 0; i < 5; i++) {
+            // Create initial clouds
+            for (let i = 0; i < 10; i++) {
                 createCloud();
             }
             
-            createStar();
+            for (let i = 0; i < 20; i++) {
+                createStar();
+            }
             
             // Start the game loop
             requestAnimationFrame(updateGame);
@@ -118,53 +121,70 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleCanvasClick() {
         if (!gameStarted) {
             startGame();
-        } else {
-            movePlaneUp();
         }
     }
     
     function handleKeyDown(e) {
-        if (e.code === 'Space' || e.code === 'ArrowUp') {
-            if (!gameStarted) {
-                startGame();
-            } else {
-                movePlaneUp();
-            }
-        } else if (e.code === 'ArrowDown') {
-            movePlaneDown();
+        if (!gameStarted && e.code === 'Space') {
+            startGame();
+            return;
         }
-    }
-    
-    function movePlaneUp() {
-        if (gameRunning && plane.y > 30) {
-            plane.y -= plane.speed * 2;
+        
+        if (!gameRunning) return;
+        
+        switch(e.code) {
+            case 'ArrowUp':
+                pitch -= 0.05; // Pitch up
+                break;
+            case 'ArrowDown':
+                pitch += 0.05; // Pitch down
+                break;
+            case 'ArrowLeft':
+                roll -= 0.05; // Roll left
+                cameraAngle -= 0.05;
+                break;
+            case 'ArrowRight':
+                roll += 0.05; // Roll right
+                cameraAngle += 0.05;
+                break;
+            case 'KeyW':
+                speed += 0.5; // Increase speed
+                break;
+            case 'KeyS':
+                speed -= 0.5; // Decrease speed
+                break;
         }
-    }
-    
-    function movePlaneDown() {
-        if (gameRunning && plane.y < canvas.height - plane.height - 30) {
-            plane.y += plane.speed * 2;
-        }
+        
+        // Clamp values
+        pitch = Math.max(-0.5, Math.min(0.5, pitch));
+        roll = Math.max(-0.5, Math.min(0.5, roll));
+        speed = Math.max(1, Math.min(10, speed));
     }
     
     function createCloud() {
+        const z = Math.random() * 1000 + 500;
+        const scale = 1000 / (z + 1);
+        
         const cloud = {
-            x: canvas.width + Math.random() * 200,
-            y: Math.random() * (canvas.height / 2),
-            width: Math.random() * 70 + 50,
-            height: Math.random() * 30 + 20,
-            speed: Math.random() * 1 + 0.5
+            x: (Math.random() * 2000 - 1000),
+            y: (Math.random() * 200 - 400),
+            z: z,
+            width: (Math.random() * 70 + 50) * scale,
+            height: (Math.random() * 30 + 20) * scale,
+            speed: Math.random() * 0.5 + 0.5
         };
         
         clouds.push(cloud);
     }
     
     function createStar() {
+        const z = Math.random() * 500 + 800;
+        
         const star = {
-            x: canvas.width + Math.random() * 200,
-            y: Math.random() * (canvas.height - 100) + 50,
-            radius: 10,
-            speed: 2,
+            x: (Math.random() * 2000 - 1000),
+            y: (Math.random() * 300 - 500),
+            z: z,
+            radius: 2,
             collected: false
         };
         
@@ -174,33 +194,55 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateGame() {
         if (!gameRunning) return;
         
+        // Apply pitch to altitude
+        altitude -= pitch * speed * 10;
+        if (altitude < 50) {
+            // Too low, game over
+            gameOver("You crashed into the ground!");
+            return;
+        }
+        
+        // Increase score based on distance traveled
+        score += Math.round(speed / 10);
+        scoreDisplay.textContent = score;
+        
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Draw background
         drawBackground();
         
+        // Update and draw stars (for high altitude)
+        if (altitude > 800) {
+            updateStars();
+        }
+        
+        // Draw horizon line based on pitch
+        drawHorizon();
+        
+        // Draw 3D terrain
+        drawTerrain();
+        
         // Update and draw clouds
         updateClouds();
         
-        // Update and draw stars
-        updateStars();
-        
-        // Auto-float the plane gently down
-        if (plane.y < canvas.height - plane.height - 30) {
-            plane.y += 0.5;
-        }
-        
         // Draw plane
-        drawPlane();
+        drawPlane3D();
+        
+        // Draw HUD
+        drawHUD();
+        
+        // Slowly return to level flight
+        pitch *= 0.98;
+        roll *= 0.98;
         
         // Check for new cloud creation
-        if (clouds.length < 5) {
+        if (Math.random() < 0.05 && clouds.length < 15) {
             createCloud();
         }
         
         // Check for new star creation
-        if (stars.length < 2) {
+        if (Math.random() < 0.02 && stars.length < 25) {
             createStar();
         }
         
@@ -210,80 +252,200 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function drawPlane() {
+    function drawPlane3D() {
+        // Draw cockpit view (first-person perspective)
         ctx.save();
         
-        // Plane body
-        ctx.fillStyle = 'var(--secondary-color)';
-        ctx.fillRect(plane.x, plane.y, plane.width, plane.height);
+        // Center of the screen
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
         
-        // Plane tail
-        ctx.fillStyle = 'var(--primary-color)';
+        // Draw dashboard
+        ctx.fillStyle = '#333';
         ctx.beginPath();
-        ctx.moveTo(plane.x, plane.y);
-        ctx.lineTo(plane.x - 15, plane.y - 10);
-        ctx.lineTo(plane.x, plane.y + 10);
+        ctx.moveTo(0, canvas.height);
+        ctx.lineTo(0, canvas.height - 100 + roll * 50);
+        ctx.lineTo(canvas.width, canvas.height - 100 - roll * 50);
+        ctx.lineTo(canvas.width, canvas.height);
         ctx.fill();
         
-        // Plane wings
-        ctx.fillStyle = 'var(--primary-color)';
+        // Draw control stick
+        ctx.fillStyle = '#555';
         ctx.beginPath();
-        ctx.moveTo(plane.x + 20, plane.y);
-        ctx.lineTo(plane.x + 30, plane.y - 15);
-        ctx.lineTo(plane.x + 40, plane.y);
+        ctx.arc(centerX, canvas.height - 50, 10, 0, Math.PI * 2);
         ctx.fill();
         
-        // Window
-        ctx.fillStyle = 'white';
-        ctx.fillRect(plane.x + 10, plane.y + 5, 15, 10);
+        // Draw stick
+        ctx.strokeStyle = '#777';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(centerX, canvas.height - 50);
+        ctx.lineTo(centerX + roll * 30, canvas.height - 70 + pitch * 40);
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawHorizon() {
+        ctx.save();
+        
+        const horizonY = canvas.height / 2 + pitch * 200;
+        
+        // Sky above horizon
+        ctx.fillStyle = '#1a73e8';
+        ctx.beginPath();
+        ctx.rect(0, 0, canvas.width, horizonY);
+        ctx.fill();
+        
+        // Ground below horizon
+        const groundGradient = ctx.createLinearGradient(0, horizonY, 0, canvas.height);
+        groundGradient.addColorStop(0, '#3d7d41');
+        groundGradient.addColorStop(1, '#2d5d31');
+        ctx.fillStyle = groundGradient;
+        ctx.beginPath();
+        ctx.rect(0, horizonY, canvas.width, canvas.height - horizonY);
+        ctx.fill();
+        
+        // Horizon line
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, horizonY);
+        ctx.lineTo(canvas.width, horizonY);
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawTerrain() {
+        ctx.save();
+        
+        const horizonY = canvas.height / 2 + pitch * 200;
+        const centerX = canvas.width / 2;
+        
+        // Draw 3D terrain
+        for (let i = 0; i < terrain.length; i++) {
+            const point = terrain[i];
+            
+            // Apply camera angle to x-position
+            const rotatedX = point.x * Math.cos(cameraAngle) - point.z * Math.sin(cameraAngle);
+            const rotatedZ = point.x * Math.sin(cameraAngle) + point.z * Math.cos(cameraAngle);
+            
+            // Perspective projection
+            const scale = 1000 / (rotatedZ + altitude + 1000);
+            const projectedX = centerX + rotatedX * scale;
+            const projectedY = horizonY + point.height * scale;
+            
+            // Only draw points in front of the camera and within screen
+            if (rotatedZ > -altitude && projectedX > 0 && projectedX < canvas.width) {
+                ctx.fillStyle = '#2d5d31';
+                ctx.beginPath();
+                ctx.arc(projectedX, projectedY, 4 * scale, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
         
         ctx.restore();
     }
     
     function updateClouds() {
-        // Filter out clouds that have gone off screen
-        clouds = clouds.filter(cloud => cloud.x + cloud.width > 0);
+        ctx.save();
+        
+        const horizonY = canvas.height / 2 + pitch * 200;
+        const centerX = canvas.width / 2;
+        
+        // Filter out clouds that are behind us
+        clouds = clouds.filter(cloud => cloud.z > -altitude);
+        
+        // Sort clouds by z-depth for proper rendering
+        clouds.sort((a, b) => b.z - a.z);
         
         for (let i = 0; i < clouds.length; i++) {
-            clouds[i].x -= clouds[i].speed;
+            const cloud = clouds[i];
             
-            // Draw cloud
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.beginPath();
-            ctx.arc(clouds[i].x, clouds[i].y, clouds[i].height/2, 0, Math.PI * 2);
-            ctx.arc(clouds[i].x + clouds[i].width/3, clouds[i].y - clouds[i].height/4, clouds[i].height/2, 0, Math.PI * 2);
-            ctx.arc(clouds[i].x + clouds[i].width/1.5, clouds[i].y, clouds[i].height/2, 0, Math.PI * 2);
-            ctx.arc(clouds[i].x + clouds[i].width/3, clouds[i].y + clouds[i].height/4, clouds[i].height/2, 0, Math.PI * 2);
-            ctx.fill();
+            // Apply camera perspective and movement
+            cloud.z -= speed;
+            
+            // Apply camera angle to x-position
+            const rotatedX = cloud.x * Math.cos(cameraAngle) - cloud.z * Math.sin(cameraAngle);
+            const rotatedZ = cloud.x * Math.sin(cameraAngle) + cloud.z * Math.cos(cameraAngle);
+            
+            // Perspective projection
+            const scale = 1000 / (rotatedZ + altitude + 1);
+            const projectedX = centerX + rotatedX * scale;
+            const projectedY = horizonY + cloud.y * scale;
+            const projectedWidth = cloud.width * scale;
+            const projectedHeight = cloud.height * scale;
+            
+            // Only draw clouds that are in front of the camera
+            if (rotatedZ > -altitude) {
+                // Set opacity based on distance
+                const opacity = Math.min(1, Math.max(0.1, 1 - rotatedZ / 2000));
+                
+                // Draw cloud
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(projectedX, projectedY, projectedHeight, 0, Math.PI * 2);
+                ctx.arc(projectedX + projectedWidth/3, projectedY - projectedHeight/4, projectedHeight, 0, Math.PI * 2);
+                ctx.arc(projectedX + projectedWidth/1.5, projectedY, projectedHeight, 0, Math.PI * 2);
+                ctx.arc(projectedX + projectedWidth/3, projectedY + projectedHeight/4, projectedHeight, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
+        
+        ctx.restore();
     }
     
     function updateStars() {
-        // Filter out stars that have gone off screen
-        stars = stars.filter(star => star.x + star.radius > 0 && !star.collected);
+        ctx.save();
+        
+        const horizonY = canvas.height / 2 + pitch * 200;
+        const centerX = canvas.width / 2;
+        
+        // Filter out stars that are behind us
+        stars = stars.filter(star => star.z > -altitude && !star.collected);
         
         for (let i = 0; i < stars.length; i++) {
-            stars[i].x -= stars[i].speed;
+            const star = stars[i];
             
-            // Draw star
-            ctx.fillStyle = 'gold';
-            drawStar(stars[i].x, stars[i].y, stars[i].radius);
+            // Apply camera perspective and movement
+            star.z -= speed;
             
-            // Check if plane collected the star
-            if (
-                plane.x + plane.width > stars[i].x - stars[i].radius &&
-                plane.x < stars[i].x + stars[i].radius &&
-                plane.y + plane.height > stars[i].y - stars[i].radius &&
-                plane.y < stars[i].y + stars[i].radius
-            ) {
-                stars[i].collected = true;
-                score++;
-                scoreDisplay.textContent = score;
+            // Apply camera angle to x-position
+            const rotatedX = star.x * Math.cos(cameraAngle) - star.z * Math.sin(cameraAngle);
+            const rotatedZ = star.x * Math.sin(cameraAngle) + star.z * Math.cos(cameraAngle);
+            
+            // Perspective projection
+            const scale = 1000 / (rotatedZ + altitude + 1);
+            const projectedX = centerX + rotatedX * scale;
+            const projectedY = horizonY + star.y * scale;
+            const projectedRadius = star.radius * scale;
+            
+            // Only draw stars above the horizon and in front of the camera
+            if (rotatedZ > -altitude && projectedY < horizonY) {
+                // Set opacity based on distance
+                const opacity = Math.min(1, Math.max(0.2, 1 - rotatedZ / 2000));
                 
-                // Create a small visual effect when scoring
-                createScoreEffect();
+                // Draw star
+                ctx.fillStyle = `rgba(255, 255, 100, ${opacity})`;
+                drawStar(projectedX, projectedY, Math.max(1, projectedRadius));
+                
+                // Check if plane collected the star
+                const distanceToStar = Math.hypot(
+                    projectedX - centerX,
+                    projectedY - (canvas.height / 2)
+                );
+                
+                if (distanceToStar < 30 && rotatedZ < 100) {
+                    stars[i].collected = true;
+                    score += 100;
+                    scoreDisplay.textContent = score;
+                    createScoreEffect();
+                }
             }
         }
+        
+        ctx.restore();
     }
     
     function drawStar(x, y, radius) {
@@ -307,6 +469,77 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.resetTransform();
     }
     
+    function drawHUD() {
+        ctx.save();
+        
+        // Draw altitude indicator
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(10, 10, 120, 30);
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Poppins, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Altitude: ${Math.round(altitude)} ft`, 15, 30);
+        
+        // Draw speed indicator
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(10, 50, 120, 30);
+        ctx.fillStyle = 'white';
+        ctx.fillText(`Speed: ${Math.round(speed * 50)} mph`, 15, 70);
+        
+        // Draw artificial horizon indicator (attitude indicator)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(canvas.width - 80, 10, 70, 70);
+        
+        // Draw horizon line in indicator
+        const indicatorCenterX = canvas.width - 45;
+        const indicatorCenterY = 45;
+        const indicatorRadius = 25;
+        
+        // Draw sky half
+        ctx.fillStyle = '#1a73e8';
+        ctx.beginPath();
+        ctx.arc(indicatorCenterX, indicatorCenterY, indicatorRadius, 0, Math.PI, true);
+        ctx.fill();
+        
+        // Draw ground half
+        ctx.fillStyle = '#3d7d41';
+        ctx.beginPath();
+        ctx.arc(indicatorCenterX, indicatorCenterY, indicatorRadius, 0, Math.PI, false);
+        ctx.fill();
+        
+        // Draw artificial horizon line rotated by roll
+        ctx.save();
+        ctx.translate(indicatorCenterX, indicatorCenterY);
+        ctx.rotate(roll);
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-indicatorRadius, pitch * indicatorRadius * 2);
+        ctx.lineTo(indicatorRadius, pitch * indicatorRadius * 2);
+        ctx.stroke();
+        ctx.restore();
+        
+        // Draw indicator border
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(indicatorCenterX, indicatorCenterY, indicatorRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Draw heading indicator
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(canvas.width / 2 - 40, 10, 80, 30);
+        
+        // Convert camera angle to degrees, adjust for proper heading display
+        let heading = ((cameraAngle * 180 / Math.PI) + 360) % 360;
+        
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText(`HDG: ${Math.round(heading)}°`, canvas.width / 2, 30);
+        
+        ctx.restore();
+    }
+    
     function createScoreEffect() {
         // Flash effect for score
         scoreDisplay.style.transform = 'scale(1.3)';
@@ -315,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 200);
     }
     
-    function gameOver() {
+    function gameOver(message) {
         gameRunning = false;
         gameStarted = false;
         
@@ -331,13 +564,14 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.fillStyle = 'var(--secondary-color)';
-        ctx.font = 'bold 30px Poppins, sans-serif';
+        ctx.font = 'bold 24px Poppins, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Flight Complete!', canvas.width / 2, canvas.height / 2 - 50);
         
         ctx.fillStyle = 'white';
         ctx.font = '16px Poppins, sans-serif';
-        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
+        ctx.fillText(message || "Flight ended", canvas.width / 2, canvas.height / 2 - 20);
+        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 10);
         ctx.fillText('Click or press SPACE to fly again', canvas.width / 2, canvas.height / 2 + 40);
     }
     
