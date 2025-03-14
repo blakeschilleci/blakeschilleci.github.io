@@ -54,59 +54,132 @@ nav ul li a:hover {
   color: #e74c3c;
 }
 
-/* Resume Section */
-.resume {
+/* Contact Page */
+.contact {
   padding: 60px 0;
   background-color: #ecf0f1;
   text-align: center;
-  min-height: 100vh;
 }
 
-.resume-container {
+.contact-container {
   width: 80%;
   margin: 0 auto;
-  background-color: #fff;
-  padding: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
 }
 
-.resume-container h1 {
+.contact h1 {
   font-size: 32px;
   margin-bottom: 20px;
   color: #2c3e50;
 }
 
-.resume-container p {
-  font-size: 18px;
+.contact-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.contact-card {
+  background-color: #fff;
+  width: 250px;
+  height: 200px;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.contact-card i {
+  font-size: 50px;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.contact-card h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.contact-card p {
+  font-size: 16px;
   color: #7f8c8d;
-  margin-bottom: 30px;
 }
 
-.resume-content {
-  margin-bottom: 20px;
-}
-
-.resume-iframe {
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.download-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: #e74c3c;
-  color: #fff;
-  text-decoration: none;
+.contact-card a {
+  color: #e74c3c;
   font-weight: 600;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
+  text-decoration: none;
 }
 
-.download-btn:hover {
-  background-color: #c0392b;
+.contact-card a:hover {
+  text-decoration: underline;
+}
+
+/* About Page */
+.about {
+  padding: 60px 0;
+  background-color: #ecf0f1;
+  text-align: center;
+}
+
+.about-container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.about h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.card {
+  background-color: #fff;
+  width: 250px;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card h3 {
+  font-size: 24px;
+  margin: 20px 0;
+}
+
+.card p {
+  font-size: 16px;
+  color: #7f8c8d;
+  padding: 0 20px;
 }
 
 /* Footer Styles */
@@ -137,16 +210,23 @@ footer a:hover {
       flex-direction: column;
   }
 
-  .resume-container {
-      width: 90%;
+  .contact-cards {
+      flex-direction: column;
+      align-items: center;
   }
 
-  .resume-iframe {
-      height: 500px;
+  .contact-card {
+      width: 80%;
+      margin-bottom: 20px;
   }
 
-  .download-btn {
-      font-size: 16px;
-      padding: 10px 20px;
+  .card-container {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .card {
+      width: 80%;
+      margin-bottom: 20px;
   }
 }
