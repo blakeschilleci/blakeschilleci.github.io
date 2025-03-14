@@ -55,37 +55,101 @@ nav ul li a:hover {
 }
 
 /* Home Page */
-.home {
-  padding: 120px 0 60px;
+.hero {
+  padding: 120px 0;
   background-color: #ecf0f1;
   text-align: center;
 }
 
-.home h1 {
-  font-size: 48px;
-  color: #2c3e50;
+.hero-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.profile-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
   margin-bottom: 20px;
 }
 
-.home p {
-  font-size: 22px;
+.hero-text h1 {
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.hero-text p {
+  font-size: 18px;
   color: #7f8c8d;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
-.home-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: #e74c3c;
+/* Certifications Section */
+.certifications {
+  padding: 60px 0;
+  background-color: #fff;
+  text-align: center;
+}
+
+.certifications h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.certification-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.certification-card {
+  background-color: #fff;
+  width: 200px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.certification-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.certification-card img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.certification-card p {
+  font-size: 16px;
+  color: #7f8c8d;
+}
+
+/* Footer Styles */
+footer {
+  background-color: #2c3e50;
   color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  padding: 20px;
+  text-align: center;
+  margin-top: auto; /* Pushes the footer to the bottom */
 }
 
-.home-btn:hover {
-  background-color: #c0392b;
+footer a {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
 
 /* Resume Section */
@@ -299,54 +363,53 @@ footer a:hover {
       flex-direction: column;
   }
 
-  .resume-container {
-      width: 90%;
+  .hero {
+    padding: 80px 0;
   }
 
-  .resume-iframe {
-      height: 500px;
+  .hero-text h1 {
+    font-size: 28px;
   }
 
-  .download-btn {
-      font-size: 16px;
-      padding: 10px 20px;
+  .hero-text p {
+    font-size: 16px;
+  }
+
+  .profile-img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .certifications h2 {
+    font-size: 28px;
+  }
+
+  .certification-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .certification-card {
+    width: 80%;
   }
 
   .contact-cards {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .contact-card {
-      width: 80%;
-      margin-bottom: 20px;
+    width: 80%;
+    margin-bottom: 20px;
   }
 
   .card-container {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .card {
-      width: 80%;
-      margin-bottom: 20px;
-  }
-
-  /* Home Page - Adjustments for small screens */
-  .home {
-    padding: 120px 0 60px;
-  }
-
-  .home h1 {
-    font-size: 36px;
-  }
-
-  .home p {
-    font-size: 18px;
-  }
-
-  .home-btn {
-    font-size: 16px;
-    padding: 10px 20px;
+    width: 80%;
+    margin-bottom: 20px;
   }
 }
