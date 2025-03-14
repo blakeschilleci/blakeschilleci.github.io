@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Resume</title>
+    <title>My Resume</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -25,12 +25,20 @@
         <section class="resume">
             <div class="resume-container">
                 <h1>My Resume</h1>
-                <p>Below is my detailed resume. You can view it directly or download the PDF using the button below.</p>
-                <iframe src="assets/resume.pdf" width="100%" height="600px" frameborder="0" class="resume-iframe"></iframe>
+                <p>Below is my detailed resume. You can view it directly in the iframe or download the PDF using the button below.</p>
+                <!-- Embedded PDF in an iframe -->
+                <div class="resume-content">
+                    <iframe src="assets/resume.pdf" width="100%" height="600px" frameborder="0" class="resume-iframe"></iframe>
+                </div>
+                <!-- Download Button -->
                 <a href="assets/resume.pdf" class="download-btn" download>Download Resume</a>
             </div>
         </section>
     </main>
+
+    <footer>
+        <p>Find me on <a href="https://www.linkedin.com/in/blake-schilleci" target="_blank">LinkedIn</a></p>
+    </footer>
 
     <script src="js/script.js"></script>
 </body>
