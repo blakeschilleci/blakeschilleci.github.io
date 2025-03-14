@@ -54,7 +54,62 @@ nav ul li a:hover {
   color: #e74c3c;
 }
 
-/* Contact Page */
+/* Resume Section */
+.resume {
+  padding: 60px 0;
+  background-color: #ecf0f1;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.resume-container {
+  width: 80%;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.resume-container h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.resume-container p {
+  font-size: 18px;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+}
+
+.resume-content {
+  margin-bottom: 20px;
+}
+
+.resume-iframe {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.download-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #e74c3c;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.download-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Contact Section */
 .contact {
   padding: 60px 0;
   background-color: #ecf0f1;
@@ -123,7 +178,7 @@ nav ul li a:hover {
   text-decoration: underline;
 }
 
-/* About Page */
+/* About Section */
 .about {
   padding: 60px 0;
   background-color: #ecf0f1;
@@ -208,6 +263,19 @@ footer a:hover {
 
   .nav ul {
       flex-direction: column;
+  }
+
+  .resume-container {
+      width: 90%;
+  }
+
+  .resume-iframe {
+      height: 500px;
+  }
+
+  .download-btn {
+      font-size: 16px;
+      padding: 10px 20px;
   }
 
   .contact-cards {
