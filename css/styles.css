@@ -589,16 +589,16 @@ nav ul li a:hover {
 }
 
 .card p {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-color);
-  padding: 0 15px;
+  padding: 0 12px;
   margin-top: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.5;
-  height: 90px;
+  line-height: 1.4;
+  height: 100px;
 }
 
 /* Footer Styles */
