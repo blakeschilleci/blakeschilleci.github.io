@@ -323,7 +323,7 @@ nav ul li a:hover {
 }
 
 .certification-card:hover img {
-  transform: rotate(5deg);
+  transform: scale(1.1);
 }
 
 .certification-card p {
