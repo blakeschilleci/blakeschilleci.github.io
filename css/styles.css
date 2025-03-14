@@ -561,7 +561,7 @@ nav ul li a:hover {
 .card {
   background-color: var(--card-bg);
   width: 280px;
-  height: 360px;
+  height: 390px;
   border-radius: 15px;
   box-shadow: var(--card-shadow);
   overflow: hidden;
@@ -600,11 +600,11 @@ nav ul li a:hover {
   padding: 0 12px;
   margin-top: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.4;
-  height: 100px;
+  height: 130px;
 }
 
 /* Game Section */
@@ -849,6 +849,7 @@ footer a:hover {
     width: 95%;
     flex-direction: column;
     gap: 15px;
+    position: relative;
   }
 
   nav ul {
@@ -864,8 +865,17 @@ footer a:hover {
 
   .mode-toggle {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 0;
+    right: 0;
+    padding: 8px;
+    font-size: 16px;
+    background-color: rgba(94, 108, 132, 0.2);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .hero {
