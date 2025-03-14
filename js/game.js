@@ -1,185 +1,269 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-    const memoryGame = document.querySelector('.memory-game');
+    const gameContainer = document.querySelector('.game-container');
     const restartBtn = document.getElementById('restart-btn');
-    const movesDisplay = document.getElementById('moves');
-    const timeDisplay = document.getElementById('time');
+    const scoreDisplay = document.getElementById('score');
+    const highScoreDisplay = document.getElementById('high-score');
     
-    let hasFlippedCard = false;
-    let lockBoard = false;
-    let firstCard, secondCard;
-    let moves = 0;
-    let matchedPairs = 0;
-    let timer;
-    let seconds = 0;
-    let gameStarted = false;
+    // Create the canvas element for the game
+    let canvas, ctx, bird, pipes, gameRunning, score, highScore, gravity, speed, gap, gameStarted;
     
-    // Icons for the memory game cards
-    const icons = [
-        'fa-code', 'fa-laptop-code', 'fa-terminal', 'fa-server',
-        'fa-database', 'fa-cloud', 'fa-bug', 'fa-robot'
-    ];
-    
-    // Create the cards
-    function createCards() {
-        // Double the icons for pairs
-        const doubledIcons = [...icons, ...icons];
-        // Shuffle the icons
-        const shuffledIcons = doubleAndShuffle(doubledIcons);
+    function setupGame() {
+        // Create canvas element
+        canvas = document.createElement('canvas');
+        canvas.width = 320;
+        canvas.height = 480;
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+        canvas.style.backgroundColor = 'var(--card-bg)';
+        canvas.style.boxShadow = 'var(--card-shadow)';
+        canvas.style.borderRadius = '10px';
         
-        // Clear existing cards
-        memoryGame.innerHTML = '';
+        // Append canvas to game container
+        const gameArea = document.querySelector('.memory-game');
+        gameArea.innerHTML = '';
+        gameArea.appendChild(canvas);
         
-        // Create cards with the shuffled icons
-        shuffledIcons.forEach(icon => {
-            const card = document.createElement('div');
-            card.classList.add('memory-card');
-            card.setAttribute('data-icon', icon);
-            
-            const frontFace = document.createElement('div');
-            frontFace.classList.add('front-face');
-            const frontIcon = document.createElement('i');
-            frontIcon.classList.add('fas', icon);
-            frontFace.appendChild(frontIcon);
-            
-            const backFace = document.createElement('div');
-            backFace.classList.add('back-face');
-            const backIcon = document.createElement('i');
-            backIcon.classList.add('fas', 'fa-question');
-            backFace.appendChild(backIcon);
-            
-            card.appendChild(frontFace);
-            card.appendChild(backFace);
-            
-            card.addEventListener('click', flipCard);
-            memoryGame.appendChild(card);
-        });
+        // Get canvas context
+        ctx = canvas.getContext('2d');
+        
+        // Initialize game variables
+        bird = {
+            x: 80,
+            y: 240,
+            width: 30,
+            height: 24,
+            gravity: 0.5,
+            velocity: 0,
+            jump: -10
+        };
+        
+        pipes = [];
+        score = 0;
+        highScore = localStorage.getItem('flappyHighScore') || 0;
+        gameRunning = false;
+        gameStarted = false;
+        gravity = 0.5;
+        speed = 2;
+        gap = 120;
+        
+        // Update display
+        scoreDisplay.textContent = score;
+        highScoreDisplay.textContent = highScore;
+        
+        // Draw initial screen
+        drawInitialScreen();
+        
+        // Event listeners
+        canvas.addEventListener('click', handleCanvasClick);
+        window.addEventListener('keydown', handleKeyDown);
     }
     
-    // Function to double and shuffle the icons array
-    function doubleAndShuffle(array) {
-        const shuffledArray = [...array];
-        for (let i = shuffledArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-        }
-        return shuffledArray;
+    function drawInitialScreen() {
+        ctx.fillStyle = 'var(--primary-color)';
+        ctx.font = '20px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click or press SPACE to Start', canvas.width / 2, canvas.height / 2);
+        
+        // Draw a little bird
+        drawBird();
     }
     
-    // Flip card function
-    function flipCard() {
-        if (lockBoard) return;
-        if (this === firstCard) return;
-        
-        this.classList.add('flip');
-        
+    function startGame() {
         if (!gameStarted) {
-            startTimer();
             gameStarted = true;
-        }
-        
-        if (!hasFlippedCard) {
-            // First click
-            hasFlippedCard = true;
-            firstCard = this;
-            return;
-        }
-        
-        // Second click
-        secondCard = this;
-        checkForMatch();
-        updateMoves();
-    }
-    
-    // Check if the two flipped cards match
-    function checkForMatch() {
-        const isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
-        
-        isMatch ? disableCards() : unflipCards();
-    }
-    
-    // Update moves counter
-    function updateMoves() {
-        moves++;
-        movesDisplay.textContent = moves;
-    }
-    
-    // Start the timer
-    function startTimer() {
-        timer = setInterval(() => {
-            seconds++;
-            timeDisplay.textContent = seconds;
-        }, 1000);
-    }
-    
-    // Reset the timer
-    function resetTimer() {
-        clearInterval(timer);
-        seconds = 0;
-        timeDisplay.textContent = seconds;
-    }
-    
-    // If cards match, keep them flipped
-    function disableCards() {
-        firstCard.removeEventListener('click', flipCard);
-        secondCard.removeEventListener('click', flipCard);
-        
-        matchedPairs++;
-        if (matchedPairs === icons.length) {
-            setTimeout(() => {
-                endGame();
-            }, 500);
-        }
-        
-        resetBoard();
-    }
-    
-    // If cards don't match, flip them back
-    function unflipCards() {
-        lockBoard = true;
-        
-        setTimeout(() => {
-            firstCard.classList.remove('flip');
-            secondCard.classList.remove('flip');
+            gameRunning = true;
+            bird.velocity = 0;
+            bird.y = 240;
+            pipes = [];
+            score = 0;
+            scoreDisplay.textContent = score;
             
-            resetBoard();
-        }, 1000);
+            // Create first pipe
+            createPipe();
+            
+            // Start the game loop
+            requestAnimationFrame(updateGame);
+        }
     }
     
-    // Reset the board after each turn
-    function resetBoard() {
-        [hasFlippedCard, lockBoard] = [false, false];
-        [firstCard, secondCard] = [null, null];
+    function handleCanvasClick() {
+        if (!gameStarted) {
+            startGame();
+        } else {
+            flapBird();
+        }
     }
     
-    // End game function
-    function endGame() {
-        clearInterval(timer);
-        alert(`Congratulations! You completed the game in ${moves} moves and ${seconds} seconds!`);
+    function handleKeyDown(e) {
+        if (e.code === 'Space') {
+            if (!gameStarted) {
+                startGame();
+            } else {
+                flapBird();
+            }
+        }
     }
     
-    // Restart game function
-    function restartGame() {
-        // Reset variables
-        hasFlippedCard = false;
-        lockBoard = false;
-        firstCard = null;
-        secondCard = null;
-        moves = 0;
-        matchedPairs = 0;
+    function flapBird() {
+        if (gameRunning) {
+            bird.velocity = bird.jump;
+        }
+    }
+    
+    function createPipe() {
+        const minHeight = 50;
+        const maxHeight = canvas.height - gap - minHeight;
+        const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+        
+        const pipe = {
+            x: canvas.width,
+            y: 0,
+            width: 50,
+            height: height,
+            passed: false
+        };
+        
+        pipes.push(pipe);
+    }
+    
+    function updateGame() {
+        if (!gameRunning) return;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Update bird position
+        bird.velocity += gravity;
+        bird.y += bird.velocity;
+        
+        // Check if bird hits the ground or ceiling
+        if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
+            gameOver();
+        }
+        
+        // Draw bird
+        drawBird();
+        
+        // Update and draw pipes
+        updatePipes();
+        
+        // Check for new pipe creation
+        if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 180) {
+            createPipe();
+        }
+        
+        // Continue the game loop
+        if (gameRunning) {
+            requestAnimationFrame(updateGame);
+        }
+    }
+    
+    function drawBird() {
+        ctx.save();
+        ctx.fillStyle = 'var(--secondary-color)';
+        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+        
+        // Draw wing
+        ctx.fillStyle = 'var(--primary-color)';
+        ctx.fillRect(bird.x, bird.y + 8, 10, 8);
+        
+        // Draw eye
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(bird.x + 22, bird.y + 8, 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.arc(bird.x + 24, bird.y + 8, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+    
+    function updatePipes() {
+        // Filter out pipes that have gone off screen
+        pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
+        
+        for (let i = 0; i < pipes.length; i++) {
+            pipes[i].x -= speed;
+            
+            // Draw top pipe
+            ctx.fillStyle = 'var(--primary-color)';
+            ctx.fillRect(pipes[i].x, pipes[i].y, pipes[i].width, pipes[i].height);
+            
+            // Draw bottom pipe
+            ctx.fillRect(
+                pipes[i].x,
+                pipes[i].height + gap,
+                pipes[i].width,
+                canvas.height - (pipes[i].height + gap)
+            );
+            
+            // Check for collision
+            if (
+                bird.x + bird.width > pipes[i].x &&
+                bird.x < pipes[i].x + pipes[i].width &&
+                (bird.y < pipes[i].height || bird.y + bird.height > pipes[i].height + gap)
+            ) {
+                gameOver();
+                break;
+            }
+            
+            // Check if bird passed the pipe
+            if (!pipes[i].passed && bird.x > pipes[i].x + pipes[i].width) {
+                pipes[i].passed = true;
+                score++;
+                scoreDisplay.textContent = score;
+                
+                // Create a small visual effect when scoring
+                createScoreEffect();
+            }
+        }
+    }
+    
+    function createScoreEffect() {
+        // Flash effect for score
+        scoreDisplay.style.transform = 'scale(1.3)';
+        setTimeout(() => {
+            scoreDisplay.style.transform = 'scale(1)';
+        }, 200);
+    }
+    
+    function gameOver() {
+        gameRunning = false;
         gameStarted = false;
         
-        // Reset UI
-        movesDisplay.textContent = moves;
-        resetTimer();
+        // Update high score if needed
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('flappyHighScore', highScore);
+            highScoreDisplay.textContent = highScore;
+        }
         
-        // Clear all cards and create new ones
-        createCards();
+        // Draw game over text
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = 'var(--secondary-color)';
+        ctx.font = 'bold 30px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 50);
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Poppins, sans-serif';
+        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
+        ctx.fillText('Click or press SPACE to restart', canvas.width / 2, canvas.height / 2 + 40);
     }
     
     // Event listener for restart button
-    restartBtn.addEventListener('click', restartGame);
+    if (restartBtn) {
+        restartBtn.addEventListener('click', function() {
+            setupGame();
+        });
+    }
     
     // Initialize the game
-    createCards();
+    setupGame();
 });
