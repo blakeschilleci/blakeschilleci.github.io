@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blake Schilleci - Engineer Portfolio</title>
+    <title>Memory Game</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,33 +33,32 @@
     </header>
 
     <main>
-        <!-- Hero Section (Home Page) -->
-        <section class="hero">
-            <div class="hero-content">
-                <img src="assets/blake.png" alt="Your Profile" class="profile-img">
-                <div class="hero-text">
-                    <h1>I'm Blake Schilleci</h1>
-                    <p>I'm a passionate engineer with experience in Software Engineering, Cloud Engineering, and DevSecOps.</p>
+        <section class="game">
+            <div class="game-container">
+                <h1>Memory Card Game</h1>
+                <p>Test your memory by matching pairs of cards. Click on any card to begin!</p>
+                
+                <div class="game-stats">
+                    <div class="stat">
+                        <span class="stat-label">Moves:</span>
+                        <span id="moves">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Time:</span>
+                        <span id="time">0</span>
+                    </div>
+                    <button id="restart-btn" class="restart-btn">
+                        <i class="fas fa-redo"></i> Restart
+                    </button>
                 </div>
-            </div>
-            <div class="scroll-down">
-                <i class="fas fa-chevron-down"></i>
-            </div>
-        </section>
-
-        <!-- Certifications Section -->
-        <section class="certifications" id="certifications">
-            <h2>Certifications</h2>
-            <div class="certification-cards">
-                <a href="https://www.credly.com/badges/432d81ba-9a87-4e1f-b151-79269e346bf6/public_url" target="_blank" class="certification-card">
-                    <img src="assets/security-plus-badge.png" alt="Security Plus Badge">
-                    <p>Security+</p>
-                </a>
+                
+                <div class="memory-game">
+                    <!-- Cards will be added here by JavaScript -->
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer>
         <p>Find me on <a href="https://www.linkedin.com/in/blake-schilleci" target="_blank">LinkedIn</a></p>
     </footer>
@@ -70,5 +69,6 @@
     </div>
 
     <script src="js/scripts.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>
