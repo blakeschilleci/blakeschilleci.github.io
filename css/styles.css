@@ -95,21 +95,6 @@ nav ul li a:hover {
   max-width: 600px;
 }
 
-.cta-btn {
-  background-color: #e74c3c;
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 18px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-.cta-btn:hover {
-  background-color: #c0392b;
-}
-
 /* Certifications Section */
 .certifications {
   background-color: #fff;
